@@ -38,36 +38,37 @@ scores = {  ("A", "A"): 1, ("A", "T"): -5, ("A", "C"): -5, ("A", "G"): -1,
 def alignDP(n, m):
     sol = np.zeros(shape = (3, n+1, m+1))
 
-    sol[0, 0, 0] = 0  # set the 0 postion on all arrays
-    sol[1, 0, 0] = 0  # set the 0 postion on all arrays
-    sol[2, 0, 0] = 0  # set the 0 postion on all arrays
+    sol[0, 0, 0] = 0  # set the 0 postion on align array
+    sol[1, 0, 0] = 0  # set the 0 postion on contA array
+    sol[2, 0, 0] = 0  # set the 0 postion on contB array
 
-    for i in range (1, m+1):
-        sol[0, 0, i] = openScore + sol[1, 0, i-1]     # open then continueA
-        sol[1, 0, i] = continueScore + sol[1, 0, i-1] # continueA
+    for i in range (1, n+1):
+            sol[1, i, 0] = continueScore + sol[1, i-1, 0]  # continueA
+            sol[0, i, 0] = openScore + sol[1, i-1, 0]      # open then continueA
 
-    for j in range (1, n+1):
-            sol[0, j, 0] = openScore + sol[2, j-1, 0]      # open then continueB
-            sol[2, j, 0] = continueScore + sol[2, j-1, 0]  # continueB
+    for j in range (1, m+1):
+        sol[2, 0, j] = continueScore + sol[2, 0, j-1] # continueB
+        sol[0, 0, j] = openScore + sol[2, 0, j-1]     # open then continueB
+
 
     for x in range (1, n+1):
         for y in range (1, m+1):
             # set swap value
             sol[0, x, y] = max(
                 sol[0, x-1, y-1] + scores[(A[x], B[y])],
-                sol[1, x, y-1] + openScore,
-                sol[2, x-1, y] + openScore
+                sol[1, x-1, y] + openScore,
+                sol[2, x, y-1] + openScore
             )
 
             # set delA
             sol[1, x, y] = max(
-                sol[1, x, y-1] + continueScore,
+                sol[1, x-1, y] + continueScore,
                 sol[0, x, y]
             )
 
             # set delB
             sol[2, x, y] = max(
-                sol[2, x-1, y] + continueScore,
+                sol[2, x, y-1] + continueScore,
                 sol[0, x, y]
             )
     print(sol)
