@@ -17,7 +17,7 @@ def align(n, m):
     return openScore + continueDeleteA(n-1, 0)
   return max(openScore + continueDeleteB(n, m-1),
              openScore + continueDeleteA(n-1, m),
-             S[A[n], B[m]] + align(n-1, m-1))
+             scores[A[n], B[m]] + align(n-1, m-1))
 
 def continueDeleteA(n, m):
   if n == 0:
@@ -43,18 +43,18 @@ def alignDP(n, m):
     sol[2, 0, 0] = 0  # set the 0 postion on all arrays
 
     for i in range (1, m+1):
-        sol[0, 0, i] = -4 - i # set the base for swap array
-        sol[1, 0, i] = -4 - i # set the base for delA array
+        sol[0, 0, i] = openScore + sol[0, 0, i-1]     # open then continueA
+        sol[1, 0, i] = continueScore + sol[1, 0, i-1] # continueA
 
     for j in range (1, n+1):
-            sol[0, j, 0] = -4 - j # set the base for swap array
-            sol[2, j, 0] = -4 - j # set the base for delB array
+            sol[0, j, 0] = openScore + sol[0, j-1, 0]      # open then continueB
+            sol[2, j, 0] = continueScore + sol[2, j-1, 0]  # continueB
 
     for x in range (1, n+1):
         for y in range (1, m+1):
             # set swap value
             sol[0, x, y] = max(
-                sol[0, x-1, y-1] + scores((A[x], B[y])),
+                sol[0, x-1, y-1] + scores[(A[x], B[y])],
                 sol[1, x-1, y],
                 sol[2, x, y-1]
             )
@@ -70,11 +70,40 @@ def alignDP(n, m):
                 sol[2, x, y-1] + continueScore,
                 sol[0, x, y] + openScore
             )
+    return sol[0, n, m]
 
-A = "ATTCGTT"
-B = "ATCCGGA"
 
-print(alignDP(len(A), len(B)))
+
+# Case 1
+A = "_"
+B = "_"
+print("Case 1: " + str(alignDP(len(A)-1, len(B)-1)))
+
+# Case
+A = "_ATCG"
+B = "_"
+print("Case 2: " + str(alignDP(len(A)-1, len(B)-1)))
+
+# Case
+A = "_ATCG"
+B = "_ATCG"
+print("Case 3: " + str(alignDP(len(A)-1, len(B)-1)))
+
+# Case
+A = "_A"
+B = "_T"
+print("Case 4: " + str(alignDP(len(A)-1, len(B)-1)))
+
+# Case
+A = "_A"
+B = "_G"
+print("Case 5: " + str(alignDP(len(A)-1, len(B)-1)))
+
+# A = "_ATTCGTT"
+# B = "_ATCCGGA"
+
+print(alignDP(len(A)-1, len(B)-1))
+# print(align(len(A)-1, len(B)-1))
 
 # if __name__ == "__main__":
 #     alignDP()
