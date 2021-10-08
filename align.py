@@ -1,9 +1,5 @@
-
-# open a gap score = openScore
-# continue gap score = continueScore
-# substitue score dictionary S
-
 import numpy as np
+from showtime import showTime
 
 continueScore = -1
 openScore = -5
@@ -29,12 +25,15 @@ def continueDeleteB(n, m):
     return align(n, m)
   return max(continueScore + continueDeleteB(n, m-1), align(n, m))
 
+
+# Score table/ dictionary
 scores = {  ("A", "A"): 1, ("A", "T"): -5, ("A", "C"): -5, ("A", "G"): -1,
             ("T", "A"): -5, ("T", "T"): 1, ("T", "C"): -1, ("T", "G"): -5,
             ("C", "A"): -5, ("C", "T"): -1, ("C", "C"): 1, ("C", "G"): -5,
             ("G", "A"): -1, ("G", "T"): -5, ("G", "C"): -5, ("G", "G"): 1
          }
 
+# Dynamic Program
 def alignDP(n, m):
     sol = np.zeros(shape = (3, n+1, m+1), dtype=np.int32)
 
@@ -59,60 +58,60 @@ def alignDP(n, m):
                 sol[1, x-1, y] + openScore,
                 sol[2, x, y-1] + openScore
             )
-
             # set delA
             sol[1, x, y] = max(
                 sol[1, x-1, y] + continueScore,
                 sol[0, x, y]
             )
-
             # set delB
             sol[2, x, y] = max(
                 sol[2, x, y-1] + continueScore,
                 sol[0, x, y]
             )
-    # print(sol)
+    # print(sol)   # only for testing small batches
     return sol[0, n, m]
 
 
+'''TEST CASES'''
+# # Case 1
+# A = "_"
+# B = "_"
+# print("Case 1: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
 
-# Case 1
-A = "_"
-B = "_"
-print("Case 1: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
+# # Case
+# A = "_ATCG"
+# B = "_"
+# print("Case 2: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
 
-# Case
-A = "_ATCG"
-B = "_"
-print("Case 2: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
+# # Case
+# A = "_ATCG"
+# B = "_ATCG"
+# print("Case 3: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
 
-# Case
-A = "_ATCG"
-B = "_ATCG"
-print("Case 3: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
+# # Case
+# A = "_A"
+# B = "_T"
+# print("Case 4: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
 
-# Case
-A = "_A"
-B = "_T"
-print("Case 4: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
+# # Case
+# A = "_A"
+# B = "_G"
+# print("Case 5: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
 
-# Case
-A = "_A"
-B = "_G"
-print("Case 5: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
+# # Case 6
+# A = "_AAA"
+# B = "_TTT"
+# print("Case 6: " + str(alignDP(len(A)-1, len(B)-1)))
+# print(align(len(A)-1, len(B)-1))
+'''END TEST CASES'''
 
-# Case 6
-A = "_AAA"
-B = "_TTT"
-print("Case 6: " + str(alignDP(len(A)-1, len(B)-1)))
-print(align(len(A)-1, len(B)-1))
-
-
+# Read in given file
+# done 2 by 2 for time sake
 valid = {'A','T','C','G'}
 A = ""
 for line in open("dna/dna1.txt", 'r').readlines():
@@ -125,6 +124,12 @@ for line in open("dna/dna1.txt", 'r').readlines():
         if char in valid:
             B += char
 
-print("Test 1 & 2 DNA: " 
-    + str(alignDP(len(A)-1, len(B)-1)))
-    
+
+def alignGraph(n):
+  alignDP(n, n)
+
+sizes = [2**8, 2**9, 2**10, 2**11, 2**12]
+
+showTime(alignGraph, sizes)
+
+
